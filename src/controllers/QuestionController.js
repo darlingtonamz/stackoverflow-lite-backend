@@ -1,13 +1,26 @@
 'use strict'
 
-// const Question = use('App/Models/Question')
+const Question = require('../models/Question')
 const ApplicationController = require('./ApplicationController')
 
 class QuestionController extends ApplicationController{
   async index (req, res) {
-    res.json({
-      message: "Hello from QuestionController"
-    })
+    // const data = await Question.find(1)
+    await Question.find(1)
+    .then((result) => {
+      // debugger
+      res.json({
+        message: "Hello from QuestionController",
+        data: result
+      })
+      
+    }).catch((err) => {
+      res.json({
+        message: "Something bad happened",
+        data: err.message || err
+      })
+      
+    });
     
   }
 

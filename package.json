@@ -19,7 +19,9 @@
   },
   "homepage": "https://github.com/darlingtonamz/stackoverflow-lite-backend#readme",
   "dependencies": {
-    "express": "^4.16.3"
+    "express": "^4.16.3",
+    "pg": "^7.4.3",
+    "pg-promise": "^8.4.6"
   },
   "devDependencies": {
     "nodemon": "^1.18.3"
