@@ -1,0 +1,27 @@
+{
+  "name": "stackoverflow-lite-backend",
+  "version": "1.0.0",
+  "description": "This is the backend core of a project that is supposed to mimick the logic of StackOverflow's basic features of users creating questions and other users ansering them",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/darlingtonamz/stackoverflow-lite-backend.git"
+  },
+  "author": "Amanze Ogbonna",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/darlingtonamz/stackoverflow-lite-backend/issues"
+  },
+  "homepage": "https://github.com/darlingtonamz/stackoverflow-lite-backend#readme",
+  "dependencies": {
+    "express": "^4.16.3"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.3"
+  }
+}
