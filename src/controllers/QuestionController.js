@@ -15,6 +15,7 @@ class QuestionController extends ApplicationController{
       })
       
     }).catch((err) => {
+      debugger
       res.json({
         message: "Something bad happened",
         data: err.message || err
