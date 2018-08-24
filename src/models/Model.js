@@ -69,9 +69,18 @@ class Model {
     return db.one(`UPDATE $1 SET ${keyval} WHERE id = $2`, {table: this.table, id});
   }
 
-  static shout() {
-    console.log('KDJFHDJFHDFJHDFJHDFJDBFJHDFBJHDBJHDFHJDFB')
+  static hasMany(table, pk = 'id', fk = `${table.substring(0, table.length - 1)}_${pk}`) {
+    return db.many(`SELECT * from ${table} where ${fk} = ${this[pk]}`, {}, array => array)
   }
+
+  static belongsTo(table, pk = `${table.substring(0, table.length - 1)}_${fk}`, fk = 'id') {
+    return db.one(`SELECT * from ${table} where ${fk} = ${this[pk]}`, {}, array => array[0])
+
+  }
+
+  // static shout() {
+  //   console.log('KDJFHDJFHDFJHDFJHDFJDBFJHDFBJHDBJHDFHJDFB')
+  // }
 }
 
 module.exports = Model
