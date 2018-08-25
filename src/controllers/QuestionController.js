@@ -9,14 +9,14 @@ class QuestionController extends ApplicationController{
     await Question.find(1)
     .then((result) => {
       // debugger
-      res.json({
+      res.status(200).json({
         message: "Hello from QuestionController",
         data: result
       })
       
     }).catch((err) => {
-      debugger
-      res.json({
+      // debugger
+      res.status(422).json({
         message: "Something bad happened",
         data: err.message || err
       })
@@ -25,7 +25,7 @@ class QuestionController extends ApplicationController{
     
   }
 
-  async store (req, res) {
+  async create (req, res) {
     
   }
 

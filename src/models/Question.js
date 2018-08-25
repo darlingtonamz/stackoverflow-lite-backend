@@ -3,8 +3,8 @@
 const Model = require('./Model')
 class Question extends Model {
 
-  constructor(table) {
-    this.table = 'questions'
+  constructor(obj) {
+    super(obj)
   }
 
   // static async find(id) {
@@ -14,11 +14,10 @@ class Question extends Model {
   //   //   debugger
   //   // }).catch((err) => {
   //   //   debugger
-      
+
   //   // });
   // }
 }
-
 Question.table = "questions"
-Question.fields = []
+Question.fields = ['title', 'body']
 module.exports = Question

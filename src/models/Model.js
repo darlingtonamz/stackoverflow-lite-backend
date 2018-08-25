@@ -1,5 +1,5 @@
 'use strict'
-// const _ = require('lodash')
+const _ = require('lodash')
 const { Pool, Client } = require('pg')
 const initOptions = {/* initialization options */};
 const pgp = require('pg-promise')();
@@ -9,42 +9,62 @@ const db = pgp(connection);
 
 class Model {
 
-  constructor(table) {
-    this.table = table
+  constructor(obj) {
+    this.assignFields(obj)
+    // this.table = table
   }
 
   static async find(id) {
-    const self = this
-    await db.any('SELECT * FROM ${this.table} WHERE id = ${id}', {table, id })
-    .then((result) => {
-      return result
-    }).catch((err) => {
-      throw err
-    });
-    
-    // db.one('SELECT $1 AS value', 123)
-    // .then(function (data) {
-    //   console.log('DATA:', data.value, self.table)
-    // })
-    // .catch(function (error) {
-    //   console.log('ERROR:', error)
-    // })
+    // const self = this
+    // debugger
+    return db.any('SELECT * FROM '+ this.table +' WHERE id = $1', [id])    
+    .then(data => data[0])
+    .catch((err) => null );
+  }
+
+  static async findBy(column, id) {
+    // const self = this
+    return db.any('SELECT * FROM ' + this.table +' WHERE ' + column + ' = $1', [id])
+    .then(data => data[0])
+    .catch((err) => null );
   }
 
   static async where(key, value) {
-    await db
+    // await db
   }
 
-  add(obj) {
+  async add(obj) {
     // return db.one('INSERT INTO users(name) VALUES($1) RETURNING id', name, a => a.id);
-    const fieldsText = 'name'
-    
-    _.forEach(this.fields, (field)=> {
-      if (data[field]) {
-        fieldsText += `${fieldsText.length > 0 ? '' : ', '}${field}`
-      }
+    const fields = this.constructor.fields
+    // let fieldsText = ''
+    // debugger
+    // _.forEach(fields, (field)=> {
+    //   if (obj[field]) {
+    //     fieldsText += `${fieldsText.length > 0 ? ', ' : ''}${field}`
+    //   }
+    // })
+
+    // debugger
+    // const cs = new pgp.helpers.ColumnSet(['col_a', 'col_b'], {table: 'tmp'});
+    const model = this.constructor
+    const table = model.table
+    // debugger
+    const cs = new pgp.helpers.ColumnSet(Object.keys(obj), {table});
+    // const values = [obj];
+    // debugger
+    const query = pgp.helpers.insert(obj, cs) + 'RETURNING id';
+    // debugger
+    // return db.one(`INSERT INTO $1(${fields}) VALUES($1) RETURNING id`, {table: this.table, obj})
+    return await db.one(query)
+    .then(async (result) => {
+      const newObj = await model.find(result.id)
+      debugger 
+      return newObj
     })
-    return db.one(`INSERT INTO $1(${fields}) VALUES($1) RETURNING id`, {table: this.table, obj}, a => a.id);
+    .catch((err) => {
+      throw err
+      // console.log(err)
+    } );
   }
 
   remove(id) {
@@ -53,13 +73,6 @@ class Model {
   }
 
   static async update(id, data){
-    /*
-      UPDATE table_name
-      SET column1 = value1, column2 = value2...., columnN = valueN
-      WHERE [condition];
-    */
-    // this.fields = 
-    
     let keyval = ''
     _.forEach(this.fields, (field)=> {
       if (data[field]) {
@@ -78,9 +91,48 @@ class Model {
 
   }
 
-  // static shout() {
-  //   console.log('KDJFHDJFHDFJHDFJHDFJDBFJHDFBJHDBJHDFHJDFB')
-  // }
+  static async new (obj) {
+    const permittedFields = _.pick(obj, this.fields)
+    const Model = require(`./${this.name}`)
+    // debugger
+    return new Model(permittedFields)
+  }
+
+  save() {
+    // debugger
+    if (this.$attributes.id) {
+      // update 
+    } else {
+      // debugger
+      // append / create
+      return this.add(this.$attributes)
+      
+    }
+  }
+
+  static create (obj) {
+    // const newObj = 
+    return this.new(obj)
+    .then((result) => {
+      // debugger
+      return result.save()
+    })
+    // .catch((err) => {
+    //   return err
+    // });
+    
+    // debugger
+  }
+
+  assignFields(obj) {
+    const fields = this.constructor.fields
+    // debugger
+    this.$attributes = obj
+    _.forEach(fields, (field)=> {
+      this[field] = obj[field]
+    })
+  }
+
 }
 
 module.exports = Model

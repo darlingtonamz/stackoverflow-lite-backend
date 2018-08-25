@@ -1,5 +1,5 @@
 // Update with your config settings.
-
+// Only used for handling migrations
 module.exports = {
 
   development: {
