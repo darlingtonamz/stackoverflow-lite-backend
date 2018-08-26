@@ -15,71 +15,102 @@ class Model {
   }
 
   static async find(id) {
-    // const self = this
-    // debugger
-    return db.any('SELECT * FROM '+ this.table +' WHERE id = $1', [id])    
-    .then(data => data[0])
-    .catch((err) => null );
+    return this.findBy('id', id)
   }
 
   static async findBy(column, id) {
     // const self = this
     return db.any('SELECT * FROM ' + this.table +' WHERE ' + column + ' = $1', [id])
-    .then(data => data[0])
+    .then(data => {
+      return data[0] ? this.new(data[0]) : null
+    })
     .catch((err) => null );
   }
 
-  static async where(key, value) {
-    // await db
+  static async where(key, value) {    
+    return await db.any('SELECT * FROM '+ this.table +' WHERE ' + key +' = $1', [value])    
+    .then(async (array) => {
+      return _.map(array, (obj) => {
+        return this.new(obj)
+      })
+    })
+    .catch((err) => {
+      throw err
+    });
+  }
+
+  static async all () {
+    return await db.any('SELECT * FROM '+ this.table, [])    
+    .then(async (array) => {
+      return _.map(array, (obj) => {
+        return this.new(obj)
+      })
+      // return newObj
+    })
+    .catch((err) => {
+      throw err
+    });
   }
 
   async add(obj) {
-    // return db.one('INSERT INTO users(name) VALUES($1) RETURNING id', name, a => a.id);
-    const fields = this.constructor.fields
-    // let fieldsText = ''
+    // const fields = this.constructor.fields
+    
+    const model = this.constructor // eg User
+    obj = _.pickBy(_.pick(obj, model.fields), _.identity)
     // debugger
-    // _.forEach(fields, (field)=> {
-    //   if (obj[field]) {
-    //     fieldsText += `${fieldsText.length > 0 ? ', ' : ''}${field}`
-    //   }
-    // })
-
-    // debugger
-    // const cs = new pgp.helpers.ColumnSet(['col_a', 'col_b'], {table: 'tmp'});
-    const model = this.constructor
     const table = model.table
     // debugger
     const cs = new pgp.helpers.ColumnSet(Object.keys(obj), {table});
-    // const values = [obj];
-    // debugger
     const query = pgp.helpers.insert(obj, cs) + 'RETURNING id';
-    // debugger
-    // return db.one(`INSERT INTO $1(${fields}) VALUES($1) RETURNING id`, {table: this.table, obj})
     return await db.one(query)
     .then(async (result) => {
       const newObj = await model.find(result.id)
-      debugger 
       return newObj
     })
     .catch((err) => {
       throw err
-      // console.log(err)
-    } );
+    });
   }
 
-  remove(id) {
+  async delete() {    
+    const model = this.constructor 
+    const table = model.table
     // return db.none('DELETE FROM users WHERE id = $1', id);
-    return db.none('DELETE FROM $1 WHERE id = $2', {table: this.table, id});
+    return await db.none('DELETE FROM '+ table +' WHERE id = $1 RETURNING id', [this.id])
+    .then((result) => this.id)
+    .catch((err) => {
+      throw err
+    });
   }
 
-  static async update(id, data){
+  async update(){   
+    const model = this.constructor 
+    const table = model.table
     let keyval = ''
-    _.forEach(this.fields, (field)=> {
-      if (data[field]) {
-        keyval += `${keyval.length > 0 ? '' : ', '}${field} = ${data[field]}`
-      }
+    let values = []
+    
+    const obj = _.pickBy(_.pick(this, model.fields), _.identity)
+
+    _.forEach(Object.keys(obj), (field)=> {
+      // if (this[field]) {
+        values.push(this[field])
+        keyval += `${keyval.length > 0 ? ', ' : ''}${field} = $${values.length + 1}`
+      // }
     })
-    return db.one(`UPDATE $1 SET ${keyval} WHERE id = $2`, {table: this.table, id});
+    // debugger
+    return await db.any('UPDATE '+ table +' SET '+ keyval  +' WHERE id = $1', _.concat(this.id, values))
+    .then(async () => {
+      return await model.find(this.id)
+    })
+    .catch((err) => {
+      throw err
+    });
+  }
+
+  merge(obj){
+    Object.keys(obj).forEach((key) => {
+      this[key] = obj[key]
+    })
   }
 
   static hasMany(table, pk = 'id', fk = `${table.substring(0, table.length - 1)}_${pk}`) {
@@ -102,10 +133,16 @@ class Model {
     // debugger
     if (this.$attributes.id) {
       // update 
+      this['updated_at'] = new Date()
+      return this.update()
     } else {
       // debugger
       // append / create
-      return this.add(this.$attributes)
+      if (!this['created_at']) 
+        this['created_at'] = new Date()
+      if (!this['updated_at'])
+        this['updated_at'] = new Date()
+      return this.add(this)
       
     }
   }
@@ -131,6 +168,11 @@ class Model {
     _.forEach(fields, (field)=> {
       this[field] = obj[field]
     })
+  }
+
+  // hide unnessary fields when converting object to JSON
+  toJSON () {
+    return _.pick(this, this.constructor.fields)
   }
 
 }

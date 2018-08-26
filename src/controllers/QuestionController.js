@@ -5,45 +5,86 @@ const ApplicationController = require('./ApplicationController')
 
 class QuestionController extends ApplicationController{
   async index (req, res) {
-    // const data = await Question.find(1)
-    await Question.find(1)
-    .then((result) => {
-      // debugger
-      res.status(200).json({
-        message: "Hello from QuestionController",
-        data: result
-      })
-      
-    }).catch((err) => {
-      // debugger
-      res.status(422).json({
-        message: "Something bad happened",
-        data: err.message || err
-      })
-      
-    });
+    const questions = await (req.params.user_id ? 
+      Question.where('user_id', req.user.id) : 
+      Question.all())
     
+    res.status(200).json({
+      message: "Question list",
+      data: questions
+    })  
   }
 
   async create (req, res) {
+    let newQuestion =  questionParams(req)
+    newQuestion['user_id'] = req.user.id
+    // debugger
+    await Question.create(newQuestion)
+      .then((result) => {
+        // debugger
+        res.status(200).json({
+          message: "Successfully created Question",
+          data: result
+        })
+      }).catch((err) => {
+        res.status(422).json({
+          message: err.message || "Failed creating Question",
+          data: err
+        })
+      });
     
   }
 
   async show (req, res) {
-    
+    const question = req.body.model
+
+    res.status(200).json({
+      message: "Successfully found Question",
+      data: question
+    })
   }
 
   async update (req, res) {
-    
+    // authorise
+    let question = req.body.model
+    question.merge(questionParams(req))
+    question.save()
+      .then((result) => {
+        res.status(200).json({
+          message: "Successfully updated Question",
+          data: result
+        })
+      }).catch((err) => {
+        res.status(422).json({
+          message: err.message || "Failed updating Question",
+          data: err
+        })
+      });
   }
-
+  
   async destroy (req, res) {
+    // authorise
+    const question = req.body.model
+
+    question.delete()
+      .then((result) => {
+        res.status(200).json({
+          message: "Successfully deleted Question",
+          data: result
+        })
+      }).catch((err) => {
+        res.status(422).json({
+          message: err.message || "Failed deleting Question",
+          data: err
+        })
+      });
+
   }
 }
 
-// function agentParams(request) {
-//   const fields = ['fname', 'lname', 'phone', 'password', 'organization_role_id']
-//   return ApplicationController.getParams(request.post(), fields)
-// }
+function questionParams(request) {
+  const fields = ['title', 'body']
+  return ApplicationController.getParams(request.body, fields)
+}
 
 module.exports = QuestionController

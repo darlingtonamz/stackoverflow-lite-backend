@@ -1,10 +1,16 @@
 'use strict'
 // const _ = require('lodash')
+const bcrypt = require('bcrypt');
 const Model = require('./Model')
 class User extends Model {
 
   constructor(obj) {
     super(obj)
+  }
+
+  async comparePassword(password) {
+    // debugger
+    return bcrypt.compareSync(password, this.password)
   }
 
   questions () { hasMany('questions') }

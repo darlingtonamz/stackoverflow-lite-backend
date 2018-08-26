@@ -7,11 +7,14 @@ const jwt = require('jsonwebtoken')
 class AuthController extends ApplicationController{
   async login (req, res) {
     const user = await User.findBy('email', req.body.email)
+    // debugger
     if (user) {
-      const isValid = user.comparePassword(req.body.password)
+      const isValid = await user.comparePassword(req.body.password)
       if (isValid) {
+        // debugger
         return res.status(200).json({
-          token: jwt.sign(user, process.env.JWT_SECRET)
+          user: user,
+          token: jwt.sign(user.toJSON(), process.env.JWT_SECRET)
         })
       } else {
         res.status(401).json({
