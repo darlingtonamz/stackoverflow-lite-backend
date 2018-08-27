@@ -113,12 +113,24 @@ class Model {
     })
   }
 
-  static hasMany(table, pk = 'id', fk = `${table.substring(0, table.length - 1)}_${pk}`) {
-    return db.many(`SELECT * from ${table} where ${fk} = ${this[pk]}`, {}, array => array)
+  async hasMany(table, pk = 'id', fk = `${table.substring(0, table.length - 1)}_${pk}`) {
+    return db.many('SELECT * from '+ table +' where '+ fk +' = $1', [this[pk]])
+    .then(async (array) => {
+      return _.map(array, (obj) => {
+        return this.new(obj)
+      })
+    })
+    .catch((err) => {
+      throw err
+    });
   }
 
   static belongsTo(table, pk = `${table.substring(0, table.length - 1)}_${fk}`, fk = 'id') {
-    return db.one(`SELECT * from ${table} where ${fk} = ${this[pk]}`, {}, array => array[0])
+    return db.any('SELECT * from '+ table +' where '+ fk +' = $1', [this[pk]])
+    .then(data => {
+      return data[0] ? this.new(data[0]) : null
+    })
+    .catch((err) => null );
 
   }
 
