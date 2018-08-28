@@ -28,4 +28,13 @@ router.post('/questions', QuestionController.create)
 router.patch('/questions/:id', QuestionController.update)
 router.delete('/questions/:id', QuestionController.destroy)
 
+router.get('/answers', AnswerController.index)
+router.all('/answers/:id', findItem('Answer'))
+router.get('/answers/:id', AnswerController.show)
+router.all('/answers*', auth)
+router.post('/answers', AnswerController.create)
+router.patch('/answers/:id', AnswerController.update)
+router.delete('/answers/:id', AnswerController.destroy)
+// /questions/<questionId>/answers/<answerId
+
 module.exports = router;
