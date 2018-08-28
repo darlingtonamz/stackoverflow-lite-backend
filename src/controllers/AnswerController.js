@@ -63,6 +63,32 @@ class AnswerController extends ApplicationController{
         })
       });
   }
+
+  async markAnswer (req, res) {
+    let answer = req.body.model
+    let question = req.body.parentModel
+    if (req.user.id == question['user_id']) {
+      question.merge({
+        accepted_answer_id: answer.id
+      })
+      question.save()
+        .then((result) => {
+          res.status(200).json({
+            message: "Answer marked as correct",
+            data: result
+          })
+        }).catch((err) => {
+          res.status(422).json({
+            message: err.message || "Failed marking Answer",
+            data: err
+          })
+        });
+    } else {
+      res.status(401).json({
+        message: "Access denied: Only Question owner can mark correct answer"
+      })      
+    }
+  }
   
   async destroy (req, res) {
     // authorise

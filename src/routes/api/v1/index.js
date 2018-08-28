@@ -39,7 +39,7 @@ router.post('/questions/:question_id/answers', AnswerController.create)
 router.patch('/questions/:question_id/answers/:id', AnswerController.update)
 router.delete('/questions/:question_id/answers/:id', AnswerController.destroy)
 // MARK ANSWER AS ACCEPTED
-// router.put('questions/:question_id/answers/:id', AnswerController.accept)
-// /questions/<questionId>/answers/<answerId
+// /questions/<questionId>/answers/<answerId>
+router.put('/questions/:question_id/answers/:id', AnswerController.markAnswer)
 
 module.exports = router;
