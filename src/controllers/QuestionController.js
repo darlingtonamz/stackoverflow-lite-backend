@@ -5,10 +5,14 @@ const ApplicationController = require('./ApplicationController')
 
 class QuestionController extends ApplicationController{
   async index (req, res) {
-    const questions = await (req.params.user_id ? 
-      Question.where('user_id', req.user.id) : 
-      Question.all())
-    
+    const questions = (
+      req.params.user_id ? 
+      await Question.search(req.query.title, {
+        'user_id': req.user.id
+      }) : 
+      await Question.search(req.query.title)
+    )
+    // debugger
     res.status(200).json({
       message: "Question list",
       data: questions

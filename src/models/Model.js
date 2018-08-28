@@ -27,12 +27,17 @@ class Model {
     .catch((err) => null );
   }
 
-  static async where(key, value) {    
-    return await db.any('SELECT * FROM '+ this.table +' WHERE ' + key +' = $1', [value])    
+  // static async where(key, value, operator = '=', valueExpression = '$1') {    
+  static async where(key, value, clause = `${key} = $1`) {     
+    // return await db.any('SELECT * FROM '+ this.table +' WHERE ' + key +' '+ operator+' '+ valueExpression, [value])    
+    return await db.any('SELECT * FROM '+ this.table +' WHERE ' + clause, [value])    
     .then(async (array) => {
-      return _.map(array, (obj) => {
-        return this.new(obj)
+      // debugger
+      let objArray = []
+      await array.forEach(async (obj) => {
+        objArray.push(await this.new(obj))
       })
+      return objArray
     })
     .catch((err) => {
       throw err
@@ -42,10 +47,11 @@ class Model {
   static async all () {
     return await db.any('SELECT * FROM '+ this.table, [])    
     .then(async (array) => {
-      return _.map(array, (obj) => {
-        return this.new(obj)
+      let objArray = []
+      await array.forEach(async (obj) => {
+        objArray.push(await this.new(obj))
       })
-      // return newObj
+      return objArray
     })
     .catch((err) => {
       throw err
@@ -113,12 +119,14 @@ class Model {
     })
   }
 
-  async hasMany(table, pk = 'id', fk = `${table.substring(0, table.length - 1)}_${pk}`) {
-    return db.many('SELECT * from '+ table +' where '+ fk +' = $1', [this[pk]])
-    .then(async (array) => {
-      return _.map(array, (obj) => {
-        return this.new(obj)
+  async hasMany(table, pk ='id', fk = `${this.constructor.table.substring(0, this.constructor.table.length - 1)}_${pk}`) {
+    return db.any('SELECT * from '+ table +' where '+ fk +' = $1', [this[pk]])
+    .then(async (array) => {      
+      let objArray = []
+      await array.forEach(async (obj) => {
+        objArray.push(await this.constructor.new(obj))
       })
+      return objArray
     })
     .catch((err) => {
       throw err
@@ -128,7 +136,7 @@ class Model {
   static belongsTo(table, pk = `${table.substring(0, table.length - 1)}_${fk}`, fk = 'id') {
     return db.any('SELECT * from '+ table +' where '+ fk +' = $1', [this[pk]])
     .then(data => {
-      return data[0] ? this.new(data[0]) : null
+      return data[0] ? this.constructor.new(data[0]) : null
     })
     .catch((err) => null );
 
@@ -138,7 +146,7 @@ class Model {
     const permittedFields = _.pick(obj, this.fields)
     const Model = require(`./${this.name}`)
     // debugger
-    return new Model(permittedFields)
+    return await new Model(permittedFields)
   }
 
   save() {
@@ -181,6 +189,7 @@ class Model {
       this[field] = obj[field]
     })
   }
+
 
   // hide unnessary fields when converting object to JSON
   toJSON () {

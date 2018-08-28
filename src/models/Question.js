@@ -7,7 +7,23 @@ class Question extends Model {
     super(obj)
   }
 
-  answers () { hasMany('answers') }
+  answers () { return this.hasMany('answers') }
+
+  static async search(title, options = {}){
+    let extra = ''
+    if (options.keys) {
+      options.keys.forEach(key => {
+        extra += ` AND ${key} = '${options[key]}`
+      });
+    }
+    
+    // debugger
+    return await (title ? 
+      // this.where('lower(title)', title.toLowerCase(), 'like', `'%${title.toLowerCase()}%'`) : 
+      this.where('lower(title)', title.toLowerCase(), `lower(title) like '%${title.toLowerCase()}%'${extra}`) : 
+      this.all()
+    )
+  }
 
 }
 Question.table = "questions"
