@@ -74,7 +74,7 @@ class QuestionController extends ApplicationController{
       .then((result) => {
         res.status(200).json({
           message: "Successfully deleted Question",
-          data: result
+          data: question.id
         })
       }).catch((err) => {
         res.status(422).json({

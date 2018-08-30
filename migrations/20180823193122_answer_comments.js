@@ -4,7 +4,7 @@ exports.up = function(knex, Promise) {
       table.increments()
       table.integer('user_id').notNullable()
       table.integer('answer_id').notNullable()
-      table.integer('body').notNullable()
+      table.text('body').notNullable()
       table.timestamps()
     })
   ])

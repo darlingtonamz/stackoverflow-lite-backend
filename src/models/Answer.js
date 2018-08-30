@@ -8,7 +8,7 @@ class Answer extends Model {
   }
 
   async updateVoteCount() {
-    const votes = await this.answerVotes()
+    const votes = await this.votes()
     // debugger
     let count = 0
     votes.forEach(vote => {
@@ -18,7 +18,8 @@ class Answer extends Model {
     await this.save()
   }
 
-  async answerVotes () { return this.hasMany('AnswerVote') }
+  async votes () { return this.hasMany('AnswerVote') }
+  async comments () { return this.hasMany('AnswerComment') }
 
 }
 Answer.table = "answers"

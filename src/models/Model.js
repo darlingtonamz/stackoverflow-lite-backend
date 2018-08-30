@@ -84,8 +84,8 @@ class Model {
     const model = this.constructor 
     const table = model.table
     // return db.none('DELETE FROM users WHERE id = $1', id);
-    return await db.none('DELETE FROM '+ table +' WHERE id = $1 RETURNING id', [this.id])
-    .then((result) => this.id)
+    return await db.any('DELETE FROM '+ table +' WHERE id = $1 RETURNING id', [this.id])
+    .then((result) => true)
     .catch((err) => {
       throw err
     });

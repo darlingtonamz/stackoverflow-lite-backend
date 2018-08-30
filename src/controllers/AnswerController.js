@@ -98,7 +98,7 @@ class AnswerController extends ApplicationController{
       .then((result) => {
         res.status(200).json({
           message: "Successfully deleted Answer",
-          data: result
+          data: answer.id
         })
       }).catch((err) => {
         res.status(422).json({
