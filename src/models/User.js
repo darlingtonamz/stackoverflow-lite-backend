@@ -13,7 +13,7 @@ class User extends Model {
     return bcrypt.compareSync(password, this.password)
   }
 
-  questions () { hasMany('questions') }
+  async questions () { return hasMany('Question') }
 }
 
 User.table = "users"

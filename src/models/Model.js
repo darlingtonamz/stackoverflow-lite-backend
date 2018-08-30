@@ -66,10 +66,12 @@ class Model {
     // debugger
     const table = model.table
     // debugger
+    const self = this
     const cs = new pgp.helpers.ColumnSet(Object.keys(obj), {table});
     const query = pgp.helpers.insert(obj, cs) + 'RETURNING id';
     return await db.one(query)
     .then(async (result) => {
+      await self.afterSave()
       const newObj = await model.find(result.id)
       return newObj
     })
@@ -94,6 +96,7 @@ class Model {
     const table = model.table
     let keyval = ''
     let values = []
+    const self = this
     
     const obj = _.pickBy(_.pick(this, model.fields), _.identity)
 
@@ -106,11 +109,16 @@ class Model {
     // debugger
     return await db.any('UPDATE '+ table +' SET '+ keyval  +' WHERE id = $1', _.concat(this.id, values))
     .then(async () => {
+      await self.afterSave()
       return await model.find(this.id)
     })
     .catch((err) => {
       throw err
     });
+  }
+
+  async afterSave() {
+
   }
 
   merge(obj){
@@ -119,12 +127,13 @@ class Model {
     })
   }
 
-  async hasMany(table, pk ='id', fk = `${this.constructor.table.substring(0, this.constructor.table.length - 1)}_${pk}`) {
-    return db.any('SELECT * from '+ table +' where '+ fk +' = $1', [this[pk]])
-    .then(async (array) => {      
+  async hasMany(model, pk ='id', fk = `${this.constructor.table.substring(0, this.constructor.table.length - 1)}_${pk}`) {
+    const childModel = require(`./${model}`)
+    return db.any('SELECT * from '+ childModel.table +' where '+ fk +' = $1', [this[pk]])
+    .then(async (array) => {  
       let objArray = []
       await array.forEach(async (obj) => {
-        objArray.push(await this.constructor.new(obj))
+        objArray.push(await childModel.new(obj))
       })
       return objArray
     })
@@ -133,10 +142,12 @@ class Model {
     });
   }
 
-  static belongsTo(table, pk = `${table.substring(0, table.length - 1)}_${fk}`, fk = 'id') {
-    return db.any('SELECT * from '+ table +' where '+ fk +' = $1', [this[pk]])
-    .then(data => {
-      return data[0] ? this.constructor.new(data[0]) : null
+  static belongsTo(model, pk = `${table.substring(0, table.length - 1)}_${fk}`, fk = 'id') {
+    const parentModel = require(`./${model}`)
+    
+    return db.any('SELECT * from '+ parentModel.table +' where '+ fk +' = $1', [this[pk]])
+    .then(async (data) => {
+      return data[0] ? await parentModel.new(data[0]) : null
     })
     .catch((err) => null );
 

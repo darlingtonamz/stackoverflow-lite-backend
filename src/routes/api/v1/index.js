@@ -5,6 +5,7 @@ var router = express.Router();
 // Require controller modules.
 const QuestionController = new (require('../../../controllers/QuestionController'))();
 const AnswerController = new (require('../../../controllers/AnswerController'))();
+const AnswerVoteController = new (require('../../../controllers/AnswerVoteController'))();
 const AuthController = new (require('../../../controllers/AuthController'))();
 const UserController = new (require('../../../controllers/UserController'))();
 const auth = require('../../../middlewares/auth');
@@ -41,5 +42,8 @@ router.delete('/questions/:question_id/answers/:id', AnswerController.destroy)
 // MARK ANSWER AS ACCEPTED
 // /questions/<questionId>/answers/<answerId>
 router.put('/questions/:question_id/answers/:id', AnswerController.markAnswer)
+
+router.all('/answers/:answer_id/answer_votes*', auth, findItem('Answer', 'answer_id'))
+router.put('/answers/:answer_id/answer_votes', AnswerVoteController.create)
 
 module.exports = router;

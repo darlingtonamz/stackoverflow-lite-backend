@@ -7,7 +7,6 @@ class Question extends Model {
     super(obj)
   }
 
-  answers () { return this.hasMany('answers') }
 
   static async search(title, options = {}){
     let extra = ''
@@ -25,6 +24,7 @@ class Question extends Model {
     )
   }
 
+  async answers () { return this.hasMany('Answer') }
 }
 Question.table = "questions"
 Question.fields = ['id', 'title', 'body', 'accepted_answer_id', 'user_id', 'created_at', 'updated_at']
