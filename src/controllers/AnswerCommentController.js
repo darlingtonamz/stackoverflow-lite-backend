@@ -24,7 +24,7 @@ class AnswerCommentController extends ApplicationController{
     await AnswerComment.create(newAnswerComment)
       .then((result) => {
         // debugger
-        res.status(200).json({
+        res.status(201).json({
           message: "Successfully created AnswerComment",
           data: result
         })

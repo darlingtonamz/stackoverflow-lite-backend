@@ -15,7 +15,7 @@ class UserController extends ApplicationController{
     // debugger
     await User.create(newUser)
       .then((result) => {
-        res.status(200).json({
+        res.status(201).json({
           message: "Successfully created User",
           data: result
         })

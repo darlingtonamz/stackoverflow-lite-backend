@@ -25,7 +25,7 @@ class AnswerController extends ApplicationController{
     await Answer.create(newAnswer)
       .then((result) => {
         // debugger
-        res.status(200).json({
+        res.status(201).json({
           message: "Successfully created Answer",
           data: result
         })

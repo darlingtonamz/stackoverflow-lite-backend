@@ -69,15 +69,19 @@ class Model {
     const self = this
     const cs = new pgp.helpers.ColumnSet(Object.keys(obj), {table});
     const query = pgp.helpers.insert(obj, cs) + 'RETURNING id';
+    // console.log("ADD");
     return await db.one(query)
     .then(async (result) => {
+      // console.log("ADD", result);
+
       await self.afterSave()
       const newObj = await model.find(result.id)
       return newObj
     })
-    .catch((err) => {
-      throw err
-    });
+    // .catch((err) => {
+    //   console.log("ADD ERR", err);
+    //   throw err
+    // });
   }
 
   async delete() {    
@@ -160,7 +164,7 @@ class Model {
     return await new Model(permittedFields)
   }
 
-  save() {
+  async save() {
     // debugger
     if (this.$attributes.id) {
       // update 
@@ -173,20 +177,22 @@ class Model {
         this['created_at'] = new Date()
       if (!this['updated_at'])
         this['updated_at'] = new Date()
-      return this.add(this)
+      // console.log("SAVE");
+      return await this.add(this)
       
     }
   }
 
-  static create (obj) {
+  static async create (obj) {
     // const newObj = 
+    // console.log("CREATE");
     return this.new(obj)
-    .then((result) => {
-      // debugger
-      return result.save()
+    .then(async (result) => {
+      const out = await result.save()
+      return out
     })
     // .catch((err) => {
-    //   return err
+    //   console.log("CREATE ERROR: ", err);  
     // });
     
     // debugger

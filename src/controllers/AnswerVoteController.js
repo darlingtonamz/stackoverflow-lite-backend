@@ -40,7 +40,7 @@ class AnswerVoteController extends ApplicationController{
       await AnswerVote.create(newAnswerVote)
         .then((result) => {
           // debugger
-          res.status(200).json({
+          res.status(201).json({
             message: "Successfully created AnswerVote",
             data: result
           })

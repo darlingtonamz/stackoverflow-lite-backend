@@ -26,7 +26,7 @@ class QuestionController extends ApplicationController{
     await Question.create(newQuestion)
       .then((result) => {
         // debugger
-        res.status(200).json({
+        res.status(201).json({
           message: "Successfully created Question",
           data: result
         })
