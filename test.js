@@ -8,7 +8,7 @@ const User = require('./src/models/User')
 
 const user = User.findBy('id', 20)
 .then((result) => {
-  debugger
+  // debugger
 }).catch((err) => {
   console.log(err)
 });

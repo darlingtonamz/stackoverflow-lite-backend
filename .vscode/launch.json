@@ -13,11 +13,15 @@
       "cwd": "${workspaceRoot}"
     },
     {
+        "name": "Test script Mocha",
         "type": "node",
         "request": "launch",
-        "name": "Test script",
-        "program": "${workspaceRoot}/test.js",
-        "cwd": "${workspaceRoot}"
+        "cwd": "${workspaceRoot}",
+        "runtimeExecutable": "npm",
+        "runtimeArgs": [
+            "run-script", "test"
+        ],
+        "port": 5858
     },
       {
         "type": "node",

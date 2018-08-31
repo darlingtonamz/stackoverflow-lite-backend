@@ -1,11 +1,11 @@
 'use strict'
 const _ = require('lodash')
-const { Pool, Client } = require('pg')
-const initOptions = {/* initialization options */};
 const pgp = require('pg-promise')();
-// Preparing the connection details:
-const connection = 'postgres://postgres:hisgrace@localhost:5432/stackoverflow-lite';
-const db = pgp(connection);
+// // Preparing the connection details:
+// const connection = 'postgres://postgres:hisgrace@localhost:5432/stackoverflow-lite';
+// const db = pgp(connection);
+
+const db = require('../../db')
 
 class Model {
 

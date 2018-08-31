@@ -4,9 +4,8 @@
   "description": "This is the backend core of a project that is supposed to mimick the logic of StackOverflow's basic features of users creating questions and other users ansering them",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test/**/**/*.spec.js",
-    "dev": "nodemon index.js",
-    "start": "node index.js"
+    "test": "cross-env NODE_ENV=test mocha test/**/**/*.spec.js --exit",
+    "dev": "nodemon index.js"
   },
   "repository": {
     "type": "git",
@@ -30,7 +29,9 @@
   "devDependencies": {
     "chai": "^4.1.2",
     "chai-http": "^4.0.0",
+    "cross-env": "^5.2.0",
     "mocha": "^5.2.0",
-    "nodemon": "^1.18.3"
+    "nodemon": "^1.18.3",
+    "supertest": "^3.1.0"
   }
 }
