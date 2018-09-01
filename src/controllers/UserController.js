@@ -43,7 +43,6 @@ class UserController extends ApplicationController{
   }
 
   async update (req, res) {
-    
   }
 
   async destroy (req, res) {
