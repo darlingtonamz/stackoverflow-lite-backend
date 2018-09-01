@@ -7,6 +7,11 @@ module.exports = function(app) {
       current: 'api/v1'
     })
   })
+  
+  var swaggerUi = require('swagger-ui-express'),
+    swaggerDocument = require('./swagger.json');
+
+  app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
   // app.all('/api/v1', requireAuthentication, loadUser); // like middleware
   app.use('/api/v1/', ApiV1Router)
