@@ -6,9 +6,9 @@ module.exports = {
   development: {
     client: 'postgresql',
     connection: {
-      database: DB_DATABASE,
-      user:     DB_USER,
-      password: DB_PASSWORD
+      database: DB_DATABASE || 'stackoverflow_lite_test',
+      user:     DB_USER || 'postgres',
+      password: DB_PASSWORD || 'hisgrace'
     },
     pool: {
       min: 2,

@@ -5,7 +5,7 @@ exports.up = function(knex, Promise) {
       table.integer('user_id')
       table.string('title').notNullable()
       table.text('body').notNullable()
-      table.string('accepted_answer_id').nullable().unique()
+      table.integer('accepted_answer_id').nullable().unique()
 
       table.foreign('user_id')
         .references('users.id')

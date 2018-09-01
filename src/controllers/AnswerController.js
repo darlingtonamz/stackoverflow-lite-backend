@@ -47,27 +47,34 @@ class AnswerController extends ApplicationController{
   }
 
   async update (req, res) {
-    // authorise
     let answer = req.body.model
     answer.merge(answerParams(req))
-    answer.save()
-      .then((result) => {
-        res.status(200).json({
-          message: "Successfully updated Answer",
-          data: result
-        })
-      }).catch((err) => {
-        res.status(422).json({
-          message: err.message || "Failed updating Answer",
-          data: err
-        })
-      });
+    const isAnswerOwner = req.user.id == answer['user_id']
+    
+    super.authorise({req, res}, isAnswerOwner, () => {
+      answer.save()
+        .then((result) => {
+          res.status(200).json({
+            message: "Successfully updated Answer",
+            data: result
+          })
+        }).catch((err) => {
+          res.status(422).json({
+            message: err.message || "Failed updating Answer",
+            data: err
+          })
+        });
+    }, {
+      message: "Access denied: Only owner can edit this answer"
+    })
   }
 
   async markAnswer (req, res) {
     let answer = req.body.model
     let question = req.body.parentModel
-    if (req.user.id == question['user_id']) {
+    const isQuestionOwner = req.user.id == question['user_id']
+    
+    super.authorise({req, res}, isQuestionOwner, () => {
       question.merge({
         accepted_answer_id: answer.id
       })
@@ -83,30 +90,33 @@ class AnswerController extends ApplicationController{
             data: err
           })
         });
-    } else {
-      res.status(401).json({
-        message: "Access denied: Only Question owner can mark correct answer"
-      })      
-    }
+    }, {
+      message: "Access denied: Only Question owner can mark correct answer"
+    })
   }
   
   async destroy (req, res) {
     // authorise
     const answer = req.body.model
 
-    answer.delete()
-      .then((result) => {
-        res.status(200).json({
-          message: "Successfully deleted Answer",
-          data: answer.id
-        })
-      }).catch((err) => {
-        res.status(422).json({
-          message: err.message || "Failed deleting Answer",
-          data: err
-        })
-      });
-
+    const isAnswerOwner = req.user.id == answer['user_id']
+    
+    super.authorise({req, res}, isAnswerOwner, () => {
+      answer.delete()
+        .then((result) => {
+          res.status(200).json({
+            message: "Successfully deleted Answer",
+            data: answer.id
+          })
+        }).catch((err) => {
+          res.status(422).json({
+            message: err.message || "Failed deleting Answer",
+            data: err
+          })
+        });
+    }, {
+      message: "Access denied: Only the owner can delete this answer"
+    })
   }
 }
 

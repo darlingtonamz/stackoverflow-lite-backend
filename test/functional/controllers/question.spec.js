@@ -1,124 +1,183 @@
-// process.env.NODE_ENV = 'test';
+process.env.NODE_ENV = 'test';
+// const request = require('supertest');
+const app = require('../../../index');
+var Chance = require('chance');
+var chance = new Chance();
 
-// // let mongoose = require("mongoose");
-// let Question = require('../../../src/models/Question');
+let chai = require('chai');
+let chaiHttp = require('chai-http');
+let should = chai.should();
+var expect = chai.expect;
+chai.use(chaiHttp);
+const jwt = require('jsonwebtoken')
 
-// let chai = require('chai');
-// let chaiHttp = require('chai-http');
-// let server = require('../../..');
-// let should = chai.should();
+// let mongoose = require("mongoose");
+let User = require('../../../src/models/User');
+let Question = require('../../../src/models/Question');
 
-// chai.use(chaiHttp);
+let user1, user2, question1 = null
 
-// describe('Questions', () => {
+function getAuthToken(user){
+  return jwt.sign(user.toJSON(), process.env.JWT_SECRET)
+}
 
-//   before(async (done) => {
-//     const app = require('../../../index');
-//     done()
-//   });
+describe('Questions', async () => {
+  before(async () => {
+    user1 = await User.create({
+      "fname": chance.first(),
+      "lname": chance.last(),
+      "email": chance.email(),
+      "password": "password"
+    })
 
-//   describe('/GET all questions', () => {
-//     it('it should GET all the questions', (done) => {
-//       chai.request(server)
-//         .get('/api/v1/questions')
-//         .end((err, res) => {
-//           // console.log('RESULT: ', res.status)
-//           res.should.have.status(200);
-//           // res.body.should.be.a('array');
-//           // res.body.length.should.be.eql(0);
-//           done();
-//         });
-//     });
+    user2 = await User.create({
+      "fname": chance.first(),
+      "lname": chance.last(),
+      "email": chance.email(),
+      "password": "password"
+    })
 
-//     it('it should GET all USER the questions', (done) => {
-//       const questionId = '1'
-//       chai.request(server)
-//         .get(`/api/v1/questions/${questionId}/questions`)
-//         .end((err, res) => {
-//           res.should.have.status(200);
-//           done();
-//         });
-//     });
-//   });
-//   describe('/POST question', () => {
-//     // it('it should not POST a question without pages field', (done) => {
-//     //   let question = {
-//     //     title: "The Lord of the Rings",
-//     //     author: "J.R.R. Tolkien",
-//     //     year: 1954
-//     //   }
-//     //   chai.request(server)
-//     //     .post('/question')
-//     //     .send(question)
-//     //     .end((err, res) => {
-//     //       res.should.have.status(200);
-//     //       res.body.should.be.a('object');
-//     //       res.body.should.have.property('errors');
-//     //       res.body.errors.should.have.property('pages');
-//     //       res.body.errors.pages.should.have.property('kind').eql('required');
-//     //       done();
-//     //     });
-//     // });
-//     it('it should POST a question ', (done) => {
-//       let question = {
-//         title: 'Some title',
-//         body: 'How do I make an ebook'
-//       }
-//       chai.request(server)
-//         .post('/api/v1/questions')
-//         .send(question)
-//         .end((err, res) => {
-//           res.should.have.status(200);
-//           res.body.should.be.a('object');
-//           res.body.data.should.have.property('title');
-//           res.body.data.should.have.property('body');
-//           res.body.data.should.have.property('question_id');
-//           res.body.data.should.have.property('id');
-//           done();
-//         });
-//     });
-//   });
-//   /*
-//    * Test the /GET/:id route
-//    */
-//   describe('/GET/:id question', () => {
-//     it('it should GET a question by the given id', (done) => {
-//       Question.create({
-//         title: 'Some title',
-//         body: 'How do I make an ebook'
-//       })
-//       .then((question) => {
-//         chai.request(server)
-//           .get('/api/v1/questions/' + question.id)
-//           .send(question)
-//           .end((err, res) => {
-//             res.should.have.status(200);
-//             done();
-//           });
+    // CREATE QUESTION
+    question1 = await Question.create({
+      title: chance.sentence(),
+      body: chance.paragraph(),
+      user_id: user1.id
+    })
+  });
+
+  /*
+   * Test the GET all questions route
+   */
+  describe('/GET all questions', () => {
+    it('it should GET all the questions', (done) => {
+      chai.request(app)
+        .get(`/api/v1/questions`)
+        .set('Authorization', `Bearer ${getAuthToken(user1)}`)
+        .end((err, res) => {
+          res.should.have.status(200);
+          done()
+        })
+    });
+  });
+
+  /*
+   * Test the POST questions route
+   */
+  describe('POST question', () => {
+    it('it should POST a question ', (done) => {
+      let question = {
+        title: chance.sentence(),
+        body: chance.paragraph(),
+      }
+      chai.request(app)
+        .post(`/api/v1/questions`)
+        .send(question)
+        .set('Authorization', `Bearer ${getAuthToken(user1)}`)
+        .end((err, res) => {
+          res.should.have.status(201);
+          res.body.should.be.a('object');
+          // console.log('res: ', res.body)
+          res.body.data.should.have.property('body');
+          res.body.data.should.have.property('id');
+          done();
+        });
+    });
+  });
+  /*
+   * Test the GET question route
+   */
+  describe('GET question', () => {
+    it('it should GET a question by the given id', (done) => {
+      Question.create({
+        title: chance.sentence(),
+        body: chance.paragraph(),
+        user_id: user1.id
+      })
+      .then((question) => {
+        chai.request(app)
+          .get(`/api/v1/questions/${question.id}`)
+          .send(question)
+          .set('Authorization', `Bearer ${getAuthToken(user1)}`)
+          .end((err, res) => {
+            expect(res).to.have.status(200);
+            expect(res.body.data).to.have.property('body');
+            expect(res.body.data).to.have.property('id');
+            done();
+          });
         
-//       }).catch((err) => {});
+      })
+    });
+  });
 
-//     });
-//   });
-//   /*
-//    * Test the /DELETE/:id route
-//    */
-//   describe('/DELETE/:id question', () => {
-//     it('it should DELETE a question by the given id', (done) => {
-//       Question.create({
-//         title: 'Some title',
-//         body: 'How do I make an ebook'
-//       })
-//       .then((question) => {
-//         chai.request(server)
-//           .delete('/api/v1/question/' + question.id)
-//           .end((err, res) => {
-//             res.should.have.status(200);
-//             done();
-//           });
-        
-//       }).catch((err) => {});
+  /*
+   * Test the PATCH /questions/:question_id/questions/:id route
+   */
+  describe('PATCH question', () => {
+    it('it should fail if non-owner is updating question', (done) => {      
+      chai.request(app)
+        .patch(`/api/v1/questions/${question1.id}`)
+        .set('Authorization', `Bearer ${getAuthToken(user2)}`)
+        .send({
+          body: "new body"
+        })
+        .end((err, res) => {
+          expect(err).to.be.null;
+          expect(res).to.have.status(401);
+          done()
+        });
+    })
 
-//     });
-//   });
-// });
+    it('it should succeed if owner is updating question', (done) => {      
+      chai.request(app)
+        .patch(`/api/v1/questions/${question1.id}`)
+        .set('Authorization', `Bearer ${getAuthToken(user1)}`)
+        .send({
+          body: "new body"
+        })
+        .end((err, res) => {
+          expect(err).to.be.null;
+          expect(res).to.have.status(200);
+          expect(res.body.data.body).to.be.equal("new body")
+          done()
+        });
+    })
+  })
+  /*
+   * Test the DELETE /questions/:question_id/questions/:id route
+   */
+  describe('DELETE question', () => {
+    it('it should succeed if owner is deleting question', (done) => {
+      Question.create({
+        title: chance.sentence(),
+        body: chance.paragraph(),
+        user_id: user1.id
+      })
+      .then((question) => {
+        chai.request(app)
+          .delete(`/api/v1/questions/${question.id}`)
+          .set('Authorization', `Bearer ${getAuthToken(user1)}`)
+          .end((err, res) => {
+            res.should.have.status(200);
+            done();
+          });
+      })
+    });
+
+    it('it should fail if non-owner is deleting question', (done) => {
+      Question.create({
+        title: chance.sentence(),
+        body: chance.paragraph(),
+        user_id: user1.id
+      })
+      .then((question) => {
+        chai.request(app)
+          .delete(`/api/v1/questions/${question.id}`)
+          .set('Authorization', `Bearer ${getAuthToken(user2)}`)
+          .end((err, res) => {
+            res.should.have.status(401);
+            done();
+          });
+      })
+    });
+  });
+});

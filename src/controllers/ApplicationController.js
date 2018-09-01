@@ -8,6 +8,16 @@ class ApplicationController {
     Object.keys(obj).forEach((key) => (obj[key] == null) && delete obj[key]);
     return obj
   }
+
+  authorise({res}, isPermitted, callback, options) {
+    if (isPermitted) {
+      callback()
+    } else {
+      res.status(401).json({
+        message: options.message || "Access denied"
+      })      
+    }
+  }
 }
 
 module.exports = ApplicationController

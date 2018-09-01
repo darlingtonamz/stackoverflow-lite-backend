@@ -51,37 +51,50 @@ class QuestionController extends ApplicationController{
   async update (req, res) {
     // authorise
     let question = req.body.model
-    question.merge(questionParams(req))
-    question.save()
-      .then((result) => {
-        res.status(200).json({
-          message: "Successfully updated Question",
-          data: result
-        })
-      }).catch((err) => {
-        res.status(422).json({
-          message: err.message || "Failed updating Question",
-          data: err
-        })
-      });
+
+    const isQuestionOwner = req.user.id == question['user_id']
+    
+    super.authorise({req, res}, isQuestionOwner, () => {
+      question.merge(questionParams(req))
+      question.save()
+        .then((result) => {
+          res.status(200).json({
+            message: "Successfully updated Question",
+            data: result
+          })
+        }).catch((err) => {
+          res.status(422).json({
+            message: err.message || "Failed updating Question",
+            data: err
+          })
+        });
+    }, {
+      message: "Access denied: Only the owner can update question"
+    })
   }
   
   async destroy (req, res) {
     // authorise
     const question = req.body.model
 
-    question.delete()
-      .then((result) => {
-        res.status(200).json({
-          message: "Successfully deleted Question",
-          data: question.id
-        })
-      }).catch((err) => {
-        res.status(422).json({
-          message: err.message || "Failed deleting Question",
-          data: err
-        })
-      });
+    const isQuestionOwner = req.user.id == question['user_id']
+    
+    super.authorise({req, res}, isQuestionOwner, () => {
+      question.delete()
+        .then((result) => {
+          res.status(200).json({
+            message: "Successfully deleted Question",
+            data: question.id
+          })
+        }).catch((err) => {
+          res.status(422).json({
+            message: err.message || "Failed deleting Question",
+            data: err
+          })
+        }); 
+    }, {
+      message: "Access denied: Only owner can delete question"
+    })
 
   }
 }
