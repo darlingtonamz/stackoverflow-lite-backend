@@ -4,9 +4,10 @@
   "description": "This is the backend core of a project that is supposed to mimick the logic of StackOverflow's basic features of users creating questions and other users ansering them",
   "main": "index.js",
   "scripts": {
-    "test": "cross-env NODE_ENV=test knex migrate:latest --env test && mocha test/**/**/*.spec.js --exit",
     "dev": "nodemon index.js",
-    "start": "knex migrate:latest && node index.js"
+    "pretest": "eslint --ignore-path .gitignore .",
+    "start": "knex migrate:latest && node index.js",
+    "test": "cross-env NODE_ENV=test knex migrate:latest --env test && mocha test/**/**/*.spec.js --exit",
   },
   "repository": {
     "type": "git",
@@ -33,6 +34,8 @@
     "chai": "^4.1.2",
     "chai-http": "^4.0.0",
     "cross-env": "^5.2.0",
+    "eslint": "^5.5.0",
+    "eslint-config-strongloop": "^2.1.0",
     "mocha": "^5.2.0",
     "nodemon": "^1.18.3",
     "supertest": "^3.1.0"
