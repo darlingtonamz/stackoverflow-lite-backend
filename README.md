@@ -9,4 +9,4 @@ This is the backend core of a project that is supposed to mimick the logic of St
 
 # Docs
 
-Link: [an example](http://solapi/amanze.co/docs "Title") inline link.
+Visit [Documentation](http://solapi/amanze.co/docs "Documentation for Stackover-lite API") now.
