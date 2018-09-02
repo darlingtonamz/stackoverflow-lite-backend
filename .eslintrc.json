@@ -1,1 +1,11 @@
-'{"extends": "strongloop"}' 
+{
+  "parserOptions": {
+    "ecmaVersion": 2017
+  },
+  "extends": "strongloop",
+  "globals": {
+    "describe": true,
+    "it": true,
+    "before": true
+  }
+}

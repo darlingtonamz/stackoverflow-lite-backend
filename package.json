@@ -7,7 +7,7 @@
     "dev": "nodemon index.js",
     "pretest": "eslint --ignore-path .gitignore .",
     "start": "knex migrate:latest && node index.js",
-    "test": "cross-env NODE_ENV=test knex migrate:latest --env test && mocha test/**/**/*.spec.js --exit",
+    "test": "cross-env NODE_ENV=test knex migrate:latest --env test && mocha test/**/**/*.spec.js --exit"
   },
   "repository": {
     "type": "git",

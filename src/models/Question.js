@@ -1,31 +1,34 @@
-'use strict'
+'use strict';
 // const _ = require('lodash')
-const Model = require('./Model')
+const Model = require('./Model');
 class Question extends Model {
 
   constructor(obj) {
-    super(obj)
+    super(obj);
   }
 
 
   static async search(title, options = {}){
-    let extra = ''
+    let extra = '';
     if (options.keys) {
       options.keys.forEach(key => {
-        extra += ` AND ${key} = '${options[key]}`
+        extra += ` AND ${key} = '${options[key]}`;
       });
     }
-    
-    // debugger
-    return await (title ? 
-      // this.where('lower(title)', title.toLowerCase(), 'like', `'%${title.toLowerCase()}%'`) : 
-      this.where('lower(title)', title.toLowerCase(), `lower(title) like '%${title.toLowerCase()}%'${extra}`) : 
+
+    return await (title ?
+      this.where(
+        'lower(title)',
+        title.toLowerCase(),
+        `lower(title) like '%${title.toLowerCase()}%'${extra}`) :
       this.all()
-    )
+    );
   }
 
-  async answers () { return this.hasMany('Answer') }
+  async answers() { return this.hasMany('Answer'); }
 }
-Question.table = "questions"
-Question.fields = ['id', 'title', 'body', 'accepted_answer_id', 'user_id', 'created_at', 'updated_at']
-module.exports = Question
+Question.table = 'questions';
+Question.fields = [
+  'id', 'title', 'body', 'accepted_answer_id',
+  'user_id', 'created_at', 'updated_at'];
+module.exports = Question;

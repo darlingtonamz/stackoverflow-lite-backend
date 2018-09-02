@@ -1,63 +1,60 @@
+'use strict';
+
 process.env.NODE_ENV = 'test';
-// const request = require('supertest');
 const app = require('../../../index');
 var Chance = require('chance');
 var chance = new Chance();
 
 let chai = require('chai');
 let chaiHttp = require('chai-http');
-let should = chai.should();
+// let should = chai.should();
 var expect = chai.expect;
 chai.use(chaiHttp);
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
 
-// let mongoose = require("mongoose");
+// let mongoose = require('mongoose');
 let User = require('../../../src/models/User');
 let Answer = require('../../../src/models/Answer');
 let Question = require('../../../src/models/Question');
 
-let user1, user2, question1, answer1Q1 = null
+let user1;
+let user2;
+let question1;
+let answer1Q1;
 
 function getAuthToken(user){
-  return jwt.sign(user.toJSON(), process.env.JWT_SECRET)
+  return jwt.sign(user.toJSON(), process.env.JWT_SECRET);
 }
 
-describe('Answers', async () => {
-  // it("does something", (done) => {
-  //   debugger
-  //   request(app).get("/")
-  //   .expect(200, done)
-  // })
-
-  before(async () => {
-    // console.log("sldjksdjk")
+describe('Answers', async() => {
+  before(async() => {
     user1 = await User.create({
-      "fname": chance.first(),
-      "lname": chance.last(),
-      "email": chance.email(),
-      "password": "password"
-    })
+      fname: chance.first(),
+      lname: chance.last(),
+      email: chance.email(),
+      password: 'password',
+    });
 
     user2 = await User.create({
-      "fname": chance.first(),
-      "lname": chance.last(),
-      "email": chance.email(),
-      "password": "password"
-    })
+      fname: chance.first(),
+      lname: chance.last(),
+      email: chance.email(),
+      password: 'password',
+    });
 
     // CREATE QUESTION
     question1 = await Question.create({
       title: chance.sentence(),
       body: chance.paragraph(),
-      user_id: user1.id
-    })
+      user_id: user1.id,
+    });
 
     // CREATE ANSWER
     answer1Q1 = await Answer.create({
       user_id: user2.id,
       question_id: question1.id,
-      body: chance.paragraph()
-    })
+      body: chance.paragraph(),
+    });
 
     // done();
   });
@@ -71,9 +68,10 @@ describe('Answers', async () => {
         .get(`/api/v1/questions/${question1.id}/answers`)
         .set('Authorization', `Bearer ${getAuthToken(user1)}`)
         .end((err, res) => {
-          res.should.have.status(200);
-          done()
-        })
+          expect(err).to.be.null;
+          expect(res).to.have.status(200);
+          done();
+        });
     });
   });
 
@@ -83,18 +81,18 @@ describe('Answers', async () => {
   describe('POST answer', () => {
     it('it should POST a answer ', (done) => {
       let answer = {
-        body: 'How do I make an ebook'
-      }
+        body: 'How do I make an ebook',
+      };
       chai.request(app)
         .post(`/api/v1/questions/${question1.id}/answers`)
         .send(answer)
         .set('Authorization', `Bearer ${getAuthToken(user1)}`)
         .end((err, res) => {
-          res.should.have.status(201);
-          res.body.should.be.a('object');
-          // console.log('res: ', res.body)
-          res.body.data.should.have.property('body');
-          res.body.data.should.have.property('id');
+          expect(err).to.be.null;
+          expect(res).to.have.status(201);
+          expect(res.body).to.be.a('object');
+          expect(res.body.data).to.have.property('body');
+          expect(res.body.data).to.have.property('id');
           done();
         });
     });
@@ -107,21 +105,21 @@ describe('Answers', async () => {
       Answer.create({
         user_id: user2.id,
         question_id: question1.id,
-        body: 'Some wonderful answer'
+        body: 'Some wonderful answer',
       })
-      .then((answer) => {
-        chai.request(app)
-          .get(`/api/v1/questions/${question1.id}/answers/${answer.id}`)
-          .send(answer)
-          .set('Authorization', `Bearer ${getAuthToken(user1)}`)
-          .end((err, res) => {
-            expect(res).to.have.status(200);
-            expect(res.body.data).to.have.property('body');
-            expect(res.body.data).to.have.property('id');
-            done();
-          });
-        
-      })
+        .then((answer) => {
+          chai.request(app)
+            .get(`/api/v1/questions/${question1.id}/answers/${answer.id}`)
+            .send(answer)
+            .set('Authorization', `Bearer ${getAuthToken(user1)}`)
+            .end((err, res) => {
+              expect(err).to.be.null;
+              expect(res).to.have.status(200);
+              expect(res.body.data).to.have.property('body');
+              expect(res.body.data).to.have.property('id');
+              done();
+            });
+        });
     });
   });
 
@@ -129,63 +127,65 @@ describe('Answers', async () => {
    * Test the PUT /questions/:question_id/answers/:id route
    */
   describe('PUT answer', () => {
-    it('it should succeed if owner Mark an answer as preferred', (done) => {      
-      chai.request(app)
-        .put(`/api/v1/questions/${question1.id}/answers/${answer1Q1.id}`)
-        .set('Authorization', `Bearer ${getAuthToken(user1)}`)
-        .end((err, res) => {
-          expect(err).to.be.null;
-          expect(res).to.have.status(200);
-          expect(res.body.data['accepted_answer_id']).to.be.equal(answer1Q1.id)
-          done()
-        });
-    })
+    it('it should succeed if owner Mark an answer as preferred',
+      (done) => {
+        chai.request(app)
+          .put(`/api/v1/questions/${question1.id}/answers/${answer1Q1.id}`)
+          .set('Authorization', `Bearer ${getAuthToken(user1)}`)
+          .end((err, res) => {
+            expect(err).to.be.null;
+            expect(res).to.have.status(200);
+            expect(res.body.data['accepted_answer_id'])
+              .to.be.equal(answer1Q1.id);
+            done();
+          });
+      });
 
-    it('it should fail if owner Mark an answer as preferred', (done) => {      
+    it('it should fail if owner Mark an answer as preferred', (done) => {
       chai.request(app)
         .put(`/api/v1/questions/${question1.id}/answers/${answer1Q1.id}`)
         .set('Authorization', `Bearer ${getAuthToken(user2)}`)
         .end((err, res) => {
           expect(err).to.be.null;
           expect(res).to.have.status(401);
-          done()
+          done();
         });
-    })
-  })
+    });
+  });
 
   /*
    * Test the PATCH /questions/:question_id/answers/:id route
    */
   describe('PATCH answer', () => {
-    it('it should fail if non-owner is updating answer', (done) => {      
+    it('it should fail if non-owner is updating answer', (done) => {
       chai.request(app)
         .patch(`/api/v1/questions/${question1.id}/answers/${answer1Q1.id}`)
         .set('Authorization', `Bearer ${getAuthToken(user1)}`)
         .send({
-          body: "new body"
+          body: 'new body',
         })
         .end((err, res) => {
           expect(err).to.be.null;
           expect(res).to.have.status(401);
-          done()
+          done();
         });
-    })
+    });
 
-    it('it should succeed if owner is updating answer', (done) => {      
+    it('it should succeed if owner is updating answer', (done) => {
       chai.request(app)
         .patch(`/api/v1/questions/${question1.id}/answers/${answer1Q1.id}`)
         .set('Authorization', `Bearer ${getAuthToken(user2)}`)
         .send({
-          body: "new body"
+          body: 'new body',
         })
         .end((err, res) => {
           expect(err).to.be.null;
           expect(res).to.have.status(200);
-          expect(res.body.data.body).to.be.equal("new body")
-          done()
+          expect(res.body.data.body).to.be.equal('new body');
+          done();
         });
-    })
-  })
+    });
+  });
   /*
    * Test the DELETE /questions/:question_id/answers/:id route
    */
@@ -194,34 +194,36 @@ describe('Answers', async () => {
       Answer.create({
         user_id: user2.id,
         question_id: question1.id,
-        body: 'Some wonderful answer'
+        body: 'Some wonderful answer',
       })
-      .then((answer) => {
-        chai.request(app)
-          .delete(`/api/v1/questions/${question1.id}/answers/${answer.id}`)
-          .set('Authorization', `Bearer ${getAuthToken(user2)}`)
-          .end((err, res) => {
-            res.should.have.status(200);
-            done();
-          });
-      })
+        .then((answer) => {
+          chai.request(app)
+            .delete(`/api/v1/questions/${question1.id}/answers/${answer.id}`)
+            .set('Authorization', `Bearer ${getAuthToken(user2)}`)
+            .end((err, res) => {
+              expect(err).to.be.null;
+              expect(res).to.have.status(200);
+              done();
+            });
+        });
     });
-    
+
     it('it should fail if non-owner is deleting answer', (done) => {
       Answer.create({
         user_id: user2.id,
         question_id: question1.id,
-        body: 'Some wonderful answer'
+        body: 'Some wonderful answer',
       })
-      .then((answer) => {
-        chai.request(app)
-          .delete(`/api/v1/questions/${question1.id}/answers/${answer.id}`)
-          .set('Authorization', `Bearer ${getAuthToken(user1)}`)
-          .end((err, res) => {
-            res.should.have.status(401);
-            done();
-          });
-      })
+        .then((answer) => {
+          chai.request(app)
+            .delete(`/api/v1/questions/${question1.id}/answers/${answer.id}`)
+            .set('Authorization', `Bearer ${getAuthToken(user1)}`)
+            .end((err, res) => {
+              expect(err).to.be.null;
+              expect(res).to.have.status(401);
+              done();
+            });
+        });
     });
   });
 });
