@@ -1,9 +1,18 @@
 language: node_js
 node_js:
-  - "7"
+- '7'
 services:
-  - postgresql
+- postgresql
 env:
-  - NODE_ENV=test;DB_HOST="localhost";DB_PORT="5432";DB_USER="postgres";DB_PASSWORD="";DB_DATABASE="stackoverflow_lite_test"
+- NODE_ENV=test;DB_HOST="localhost";DB_PORT="5432";DB_USER="postgres";DB_PASSWORD="";DB_DATABASE="stackoverflow_lite_test"
 before_script:
-  - psql -c 'create database stackoverflow_lite_test;' -U postgres
+- psql -c 'create database stackoverflow_lite_test;' -U postgres
+deploy:
+  provider: heroku
+  api_key:
+    secure: dxl/Pw1KN8/GHis3nFv6KDT0z0Te4jsLD52zw32dwjnuHN2iXYkksvWsnbq1ccX2vaWTGGTdELC1BBLBdoygWO2OqleuTXScHOtVSXhru+9d3kdgvPQ1FLje2f6U2uvO5KXWK0kVXzggloBeL976VYEYwqNacLavPNm1FFT0vCNzQxKiw5oxFzFD5LMtfqmZY4x3b+xO8S03J7FsKA0ZJBok470BY11J8He2RzFzzzUeP7KoafLFZRDFuH2HDcbhh7MNbMNaVYJysGrEymuOpUxCQjf6PLiHhiX1fpFNpZT7Ylqi50n7MDqozqtcgvFf2ve6E1UxwNb2ZZZdImxfNO/kIWKj1mNgARirqppAq92tTs7RjmgzelsRoVgXoOqC0qjd4CECYZZ6ZBZmolaT/GV5jBymsN0GTIWSofEOW88KpkM5/F8j4YIVDS2OgBkLl9GgFenqKxY2tgyYy2GemcgpJO+RhKWiYsPFtMDaCtgFXHPupSNk3bGlBwJc2Kpl9QHBmyQK+5QdsvIF06zZpqU16Ozb2otDqauNlub0p9UbyVViB7HQ29oVvj3swQduOF1aTaOp3iACzU75qDO9ltINaDe3rDkYW0kFgRlaLmWcO7VOifaeIH51jU+5NDA5Ltw3Ry0zS8/WLLMerB87MwG29Dn9tTq20OL9LeItDPk=
+  app: amz-sol-api
+  on:
+    branch: master
+  run:
+  - knex migrate:latest
