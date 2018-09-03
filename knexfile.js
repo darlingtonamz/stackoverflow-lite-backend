@@ -5,6 +5,7 @@ const {
   DB_USER,
   DB_PASSWORD,
   DB_DATABASE,
+  DB_HOST,
 } = process.env;
 module.exports = {
   development: {
@@ -41,6 +42,7 @@ module.exports = {
   production: {
     client: 'postgresql',
     connection: {
+      host: DB_HOST,
       database: DB_DATABASE,
       user: DB_USER,
       password: DB_PASSWORD,
