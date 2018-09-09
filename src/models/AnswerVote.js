@@ -10,8 +10,9 @@ class AnswerVote extends Model {
   }
 
   async afterSave() {
+    // debugger
     // super.afterSave()
-    (await Answer.find(this['answer_id']))
+    await (await Answer.find(this['answer_id']))
       .updateVoteCount();
   }
 

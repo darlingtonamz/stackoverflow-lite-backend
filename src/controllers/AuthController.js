@@ -13,6 +13,7 @@ class AuthController extends ApplicationController {
       if (isValid) {
         // debugger
         return res.status(200).json({
+          message: 'Login successfull',
           user: user,
           token: jwt.sign(user.toJSON(), process.env.JWT_SECRET),
         });

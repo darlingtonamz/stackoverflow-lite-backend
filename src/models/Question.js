@@ -1,6 +1,8 @@
 'use strict';
 // const _ = require('lodash')
 const Model = require('./Model');
+const User = require('./User');
+
 class Question extends Model {
 
   constructor(obj) {
@@ -25,7 +27,15 @@ class Question extends Model {
     );
   }
 
+  async afterSave() {
+    // debugger
+    // super.afterSave()
+    await (await User.find(this['user_id']))
+      .updateQuestionCount();
+  }
+
   async answers() { return this.hasMany('Answer'); }
+  async user() { return this.belongsTo('User'); }
 }
 Question.table = 'questions';
 Question.fields = [

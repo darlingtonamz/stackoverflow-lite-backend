@@ -18,7 +18,7 @@ class AnswerVoteController extends ApplicationController {
   async create(req, res) {
     const answer = req.body.parentModel;
     const existingVote = await AnswerVote.findExisting(answer.id, req.user.id);
-
+    // debugger
     if (existingVote) {
       existingVote.merge(answerVoteParams(req));
       await existingVote.save()

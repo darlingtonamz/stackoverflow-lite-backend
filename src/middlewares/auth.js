@@ -1,6 +1,11 @@
 'use strict';
 const jwt = require('jsonwebtoken');
 module.exports = (req, res, next) => {
+  if (req.method === 'OPTIONS') {
+    // allow options to pass
+    res.send(200);
+  }
+
   if (req.headers &&
     req.headers.authorization &&
     req.headers.authorization.split(' ')[0] === 'Bearer') {

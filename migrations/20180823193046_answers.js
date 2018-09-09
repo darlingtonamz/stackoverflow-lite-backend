@@ -6,7 +6,7 @@ exports.up = function(knex, Promise) {
       table.integer('user_id').notNullable();
       table.integer('question_id').notNullable();
       table.text('body');
-      table.integer('votes');
+      table.integer('votes').defaultTo(0);
 
       table.foreign('user_id')
         .references('users.id')

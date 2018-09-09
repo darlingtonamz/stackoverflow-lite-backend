@@ -10,6 +10,7 @@ class UserController extends ApplicationController {
     let newUser = userParams(req);
     // debugger
     const salt = 10;
+    // debugger
     newUser.password = bcrypt.hashSync(req.body.password, salt);
     // debugger
     await User.create(newUser)
