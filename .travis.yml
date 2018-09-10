@@ -7,12 +7,12 @@ env:
 - NODE_ENV=test;DB_HOST="localhost";DB_PORT="5432";DB_USER="postgres";DB_PASSWORD="";DB_DATABASE="stackoverflow_lite_test"
 before_script:
 - psql -c 'create database stackoverflow_lite_test;' -U postgres
-deploy:
-  provider: heroku
-  api_key:
-    secure: TiA/6XaEKuE5wkVaR3f6sQhJHnMELBIfJLnyXum5QCZmwxruFUtsWyn4z7X2SlWjDEf2RtZlHSSzBZmxn2tQGnfa+7YbrTpqRHTzH1HuZXfJHXpcmT0KcgG4s09sRRZnVrJMVHFHrt3gE2+IeozvkU5IT2RN3qyC9W89NFYSZpObSlWU+xydfHxBnejkgzxrpIZZjm4k2srcH/kmS1pD1mXk49vv6yVOjVOU8/lcfaiMW1C1cxnO9dTvGPE3g4nIeKGNb8/nZbJWuFj0x62AnODD0SLLLJu6jPyZRSY+mZwDV3F9FTBlOCXLE4JGfATzJswQkWK490YJjDNiUscEA+BZ0BnS7w+2nvSIcQIByhgpxaLh6oHdwP7+ltBf2w7FbcALPeQlgsK+3Hx4YYFwupjQP73jQry/SOjjWSlbDpxJmkNjuA7FrRQIrRnifUuW+eD9rMVOn6NjKwAQ8Ig+0+ksbWBEUNxet6qXUHFuFZw7mFbyTwVSosSajSK2CVC12pvnEWBWe+cWKBHt4u8OoqzA5y8FWJQcslZvU/HK88/ljX6diIwZkKx3cn8B1IZc2236NHKlE3vakzw1nhP7Kwji+BfNMRSFJUYD8ON1YloaFgqFGRK3kbPOk9N9tIqw5pIhbQVHoUpRHQezR2fsk0QeTx09gWQLpZPNUVqUEVk=
-  app: amz-sol-api
-  on:
-    branch: master
-  run:
-  - knex migrate:latest
+# deploy:
+#   provider: heroku
+#   api_key:
+#     secure: TiA/6XaEKuE5wkVaR3f6sQhJHnMELBIfJLnyXum5QCZmwxruFUtsWyn4z7X2SlWjDEf2RtZlHSSzBZmxn2tQGnfa+7YbrTpqRHTzH1HuZXfJHXpcmT0KcgG4s09sRRZnVrJMVHFHrt3gE2+IeozvkU5IT2RN3qyC9W89NFYSZpObSlWU+xydfHxBnejkgzxrpIZZjm4k2srcH/kmS1pD1mXk49vv6yVOjVOU8/lcfaiMW1C1cxnO9dTvGPE3g4nIeKGNb8/nZbJWuFj0x62AnODD0SLLLJu6jPyZRSY+mZwDV3F9FTBlOCXLE4JGfATzJswQkWK490YJjDNiUscEA+BZ0BnS7w+2nvSIcQIByhgpxaLh6oHdwP7+ltBf2w7FbcALPeQlgsK+3Hx4YYFwupjQP73jQry/SOjjWSlbDpxJmkNjuA7FrRQIrRnifUuW+eD9rMVOn6NjKwAQ8Ig+0+ksbWBEUNxet6qXUHFuFZw7mFbyTwVSosSajSK2CVC12pvnEWBWe+cWKBHt4u8OoqzA5y8FWJQcslZvU/HK88/ljX6diIwZkKx3cn8B1IZc2236NHKlE3vakzw1nhP7Kwji+BfNMRSFJUYD8ON1YloaFgqFGRK3kbPOk9N9tIqw5pIhbQVHoUpRHQezR2fsk0QeTx09gWQLpZPNUVqUEVk=
+#   app: amz-sol-api
+#   on:
+#     branch: master
+#   run:
+#   - knex migrate:latest
