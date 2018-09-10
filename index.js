@@ -18,7 +18,7 @@ app.use((req, res, next) => {
   // Website you wish to allow to connect
   res.setHeader('Access-Control-Allow-Origin', 'http://localhost*');
   res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
-  res.setHeader('Access-Control-Allow-Origin', 'https://*.herokuapp.com');
+  res.setHeader('Access-Control-Allow-Origin', 'https://amz-sol-frontend.herokuapp.com');
 
   // Request methods you wish to allow
   res.setHeader('Access-Control-Allow-Methods',
