@@ -39,5 +39,6 @@ class User extends Model {
 
 User.table = 'users';
 User.fields = [
-  'id', 'fname', 'lname', 'email', 'password', 'created_at', 'updated_at', 'stats'];
+  'id', 'fname', 'lname', 'email',
+  'password', 'created_at', 'updated_at', 'stats'];
 module.exports = User;
