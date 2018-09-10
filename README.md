@@ -10,3 +10,9 @@ This is the backend core of a project that is supposed to mimick the logic of St
 # Docs
 
 Visit [Documentation](http://solapi/amanze.co/docs "Documentation for Stackover-lite API") now.
+
+# Frontend
+
+- Code: [Github](https://github.com/darlingtonamz/stackoverflow-lite-frontend/ "Documentation for Stackover-lite Frontend")
+
+- Live: [Online](https://amz-sol-frontend.herokuapp.com "Live code running on Heroku")
