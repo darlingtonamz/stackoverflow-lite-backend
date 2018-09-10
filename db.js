@@ -6,10 +6,13 @@ const {
   DB_PASSWORD,
   DB_PORT,
   DB_DATABASE,
+  DATABASE_URL,
 } = process.env;
 
-const connection = `postgres://${DB_USER}:${
-  DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_DATABASE}`;
+const connection = (DATABASE_URL !== undefined) ?
+  DATABASE_URL : `postgres://${DB_USER}:${
+    DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_DATABASE
+  }`;
 
 const db = pgp(connection);
 
