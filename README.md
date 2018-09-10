@@ -1,7 +1,7 @@
 # stackoverflow-lite-backend
 
 [![Build Status](https://travis-ci.org/darlingtonamz/stackoverflow-lite-backend.svg?branch=master)](https://travis-ci.org/darlingtonamz/stackoverflow-lite-backend)
-![Coveralls github](https://img.shields.io/coveralls/github/jekyll/jekyll.svg)
+[![Coverage Status](https://coveralls.io/repos/github/darlingtonamz/stackoverflow-lite-backend/badge.svg?branch=master)](https://coveralls.io/github/darlingtonamz/stackoverflow-lite-backend?branch=master)
 
 
 
